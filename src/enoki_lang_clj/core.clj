@@ -141,5 +141,6 @@
   [& args]
   (let [ast (parser (slurp *in*))]
     (if (map? ast)
-      (println ast)
+      (binding [*out* *err*]
+        (println ast))
       (println (code-gen ast)))))
