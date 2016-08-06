@@ -1,0 +1,16 @@
+
+`/* Operators */`
++ = `(a) => (b) => a + b`
+- = `(a) => (b) => a - b`
+* = `(a) => (b) => a * b`
+/ = `(a) => (b) => a / b`
+
+`/* IO */`
+println = `(a) => console.log(a);`
+
+`/* Lists */`
+push = `(list) => (element) => list.push(element);`
+concat = `(list1) => (list2) => list1.concat(list2);`
+
+`/* Generic collections */`
+size = `(collection) => collection.size();`

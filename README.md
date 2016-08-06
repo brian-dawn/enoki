@@ -30,7 +30,7 @@ Right now you unfortunately need ImmutableJS installed globally:
 
 Now run the example:
 
-    cat example.🍄  | node out/main.js | node
+    cat example.🍄  | node out/main.js stdlib.🍄  | node
 
 Yeah that's right, the file ext is an emoji. You're welcome.
 

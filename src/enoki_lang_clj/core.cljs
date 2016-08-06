@@ -125,7 +125,6 @@
     (let [param-list (nxt (nth ast 1))
           fn-body (nxt (nth ast 2))]
 
-      (println "ha" (apply str (map #(format "(%s) => " %) param-list)))
       ;;curried
       (if (empty? param-list)
         (format "(() => %s)" fn-body)
@@ -145,12 +144,8 @@
     (format "const %s = %s;" (nxt assignment-name) (nxt righthand-side))))
 
 (defn code-gen [parser]
-  (str
-   "const Immutable = require('immutable');
-// END RUNTIME :P
-"
-   
-   (nxt parser)))
+  (nxt parser)
+  )
 
 (def fs (js/require "fs"))
 (defn read-stdin []
@@ -162,6 +157,7 @@
 (defn -dev-main
   "🍄 goes in, 💩 comes out."
   [& args]
+
   (let [src (read-stdin)
         ast (parser src)
         out (code-gen ast)
@@ -180,11 +176,17 @@
 (defn -main
   "🍄 goes in, 💩 comes out."
   [& args]
+
   (let [src (read-stdin)
         ast (parser src)
         out (code-gen ast)
-        ]
 
+        other-srcs (for [src args]
+                     (code-gen (parser (.readFileSync fs src "utf8"))))
+        ]
+    (println "const Immutable = require('immutable');")
+    (doseq [out other-srcs]
+      (println out))
     (println out)))
 
 (set! *main-cli-fn* -main)
