@@ -1,0 +1,14 @@
+
+`/* We can emit regular JS with backticks.*/`
+`/* Code comments don't exist yet lawl... but this works. */`
+
++ = `(a) => (b) => a + b`
+
+
+inc = +(1)
+
+result = inc(4)
+
+`console.log(result)`
+
+

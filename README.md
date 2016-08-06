@@ -1,36 +1,21 @@
 # enoki-lang-clj
 
-FIXME: description
+Yet another compiles to JS language. I felt the world needed more of these.
 
-## Installation
-
-Download from http://example.com/FIXME.
+Right now the compiler is Clojure, but it should be trivial to leverage CLJS so that
+it runs on node.
 
 ## Usage
 
-FIXME: explanation
+Run the example with leiningen and node.
 
-    $ java -jar enoki-lang-clj-0.1.0-standalone.jar [args]
+    cat example.🍄  | lein run | node
 
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+Yeah that's right, the file ext is an emoji. You're welcome.
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 Brian Dawn
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

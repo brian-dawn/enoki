@@ -4,37 +4,6 @@
    [clojure.string :as string])
   
   (:gen-class))
-"B = 'b'+
-// a grammar in JSON
-var grammar = {
-               \"lex\": {
-                       \"rules\": [
-                                 [\"\\\\s+\", \"/* skip whitespace */\"],
-                                 // [\"\\\\s+\", \"return 'WS';\"],
-                                 [\"[a-zA-Z]+\", \"return 'NAME';\"],
-                                 [\"[0-9]+\", \"return 'NUMBER_LITERAL';\"],
-                                 [\"\\\\[\", \"return 'OBRACKET';\"],
-                                 [\"\\\\]\", \"return 'CBRACKET';\"],
-                                 [\"\\\\{\", \"return 'OSQUIGGLY';\"],
-                                 [\"\\\\}\", \"return 'CSQUIGGLY';\"],
-                                 [\"\\\\(\", \"return 'OPAREN';\"],
-                                 [\"\\\\)\", \"return 'CPAREN';\"],
-                                 [\"\\\\|\", \"return 'BAR';\"],
-                                 [\"\\=\\>\", \"return 'ROCKET';\"],
-                                 [\"\\=\", \"return 'EQUAL';\"],
-                                 [\"let\", \"return 'LET';\"],
-                                 [\"[a-f0-9]+\", \"return 'HEX';\"]]},
-               \"bnf\": {
-                       \"expressions\": [\"expression expressions\", \"expression\"],
-                       \"expression\": [\"OPAREN expressions CPAREN\",
-                                      \"lambda\",
-                                      \"NAME\",
-                                      \"literal\",
-                                      ]}}"
-"
-    PARAMLIST = NAME
-              | NAME <WS> PARAMLIST
-"
 
 (def parser
   (insta/parser
@@ -70,7 +39,7 @@ var grammar = {
     NL = #'\\n+'
     EOL = #'$'
     EOF = #'\\A'
-    START = #'\\z'
+
 
     NUMBER_LITERAL = #'[0-9]+'
     OPAREN = '('
@@ -86,59 +55,46 @@ var grammar = {
     COMMA = ','
     ANYNOTBACKTICK = #'[^`]+'
     "))
-;;    EXPRESSION = OPAREN EXPRESSION CPAREN | NAME EXPRESSION | NAME
-(parser "foo bar")
 
 
+(defmulti nxt
+  first)
 
+(defmethod nxt :PROGRAM [ast]
+  (string/join "\n" (map nxt (rest ast))))
 
-(defmulti next
-  first
-  )
-
-(defmethod next :PROGRAM [ast]
-  (string/join "\n" (map next (rest ast)))
-  )
-(defmethod next :JSBLOCK [ast]
+(defmethod nxt :JSBLOCK [ast]
   (let [js-code (second (second ast))]
     js-code))
 
-(defmethod next :BLOCK [ast]
+(defmethod nxt :BLOCK [ast]
   (str "{\n"
-       (string/join "\n" (map next (rest ast)))
-       "\n}"
-       )
-  )
-(defmethod next :EXPRESSION [ast]
-  (string/join "\n" (map next (rest ast))) ;; todo also join?
-  ;(map next rest)
-  )
+       (string/join "\n" (map nxt (rest ast)))
+       "\n}"))
 
-(defmethod next :COMMAEXPRS [ast]
-  (map next (rest ast))
+(defmethod nxt :EXPRESSION [ast]
+  (string/join "\n" (map nxt (rest ast))))
 
+(defmethod nxt :COMMAEXPRS [ast]
+  ;; Returns a list of them.
+  (map nxt (rest ast)))
 
-)
+(defmethod nxt :EXPRESSIONS [ast]
+  (string/join "\n" (map nxt (rest ast))))
 
-(defmethod next :EXPRESSIONS [ast]
-  (string/join "\n" (map next (rest ast))))
-
-(defmethod next :CALL [ast]
+(defmethod nxt :CALL [ast]
   (let [exprs (second ast)
         fn (second exprs)
-        args (next (nth ast 2))]
+        args (nxt (nth ast 2))]
 
-    ;; currying
     (if (empty? args)
-      (str (next fn) "()")
-      (apply str (next fn) (map #(format "(%s)" %) args)))
-    ;; non currying
-;    (format "%s(%s)" (next fn) (string/join ", " (map next args)))
-    ))
+      (str (nxt fn) "()")
+      (apply str (nxt fn) (map #(format "(%s)" %) args)))))
 
-(defmethod next :NAME [ast]
+(defmethod nxt :NAME [ast]
   (let [result
         (second ast)]
+    ;; lets be awful and translate symbols into corresponding valid JS names here.
     (case result
       "*" "mul"
       "+" "add"
@@ -148,16 +104,15 @@ var grammar = {
       )
     ))
 
-(defmethod next :NUMBER_LITERAL [ast]
+(defmethod nxt :NUMBER_LITERAL [ast]
+  (second ast))
 
-  (second ast) ;; emit number literal
-  )
-(defmethod next :LAMBDA [ast]
+(defmethod nxt :LAMBDA [ast]
 
   (if (= 2 (count ast))
-    (format "(() => %s)" (next (nth ast 1)))
-    (let [param-list (next (nth ast 1))
-          fn-body (next (nth ast 2))]
+    (format "(() => %s)" (nxt (nth ast 1)))
+    (let [param-list (nxt (nth ast 1))
+          fn-body (nxt (nth ast 2))]
 
       (println "ha" (apply str (map #(format "(%s) => " %) param-list)))
       ;;curried
@@ -170,20 +125,21 @@ var grammar = {
          ")"
          )))))
 
-(defmethod next :PARAMLIST [ast]
+(defmethod nxt :PARAMLIST [ast]
   (apply str (map #(format "(%s) => " %) (map second (rest ast)))))
 
-(defmethod next :ASSIGNMENT [ast]
+(defmethod nxt :ASSIGNMENT [ast]
   (let [assignment-name (nth ast 1)
         righthand-side (nth ast 2)]
-    (format "const %s = %s;" (next assignment-name) (next righthand-side))))
+    (format "const %s = %s;" (nxt assignment-name) (nxt righthand-side))))
 
 (defn code-gen [parser]
-  (next parser)
-  )
-
+  (nxt parser))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "🍄 goes in, shit comes out."
   [& args]
-  (println "Hello, World!"))
+  (let [ast (parser (slurp *in*))]
+    (if (map? ast)
+      (println ast)
+      (println (code-gen ast)))))
