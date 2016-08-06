@@ -47,18 +47,25 @@ var grammar = {
                | LAMBDA
                | ASSIGNMENT
                | BLOCK
+               | JSBLOCK
+
 
     EXPRESSIONS = {EXPRESSION <WS>?}
-    BLOCK = <OSQUIGGLY> <WS>? EXPRESSIONS <WS>? <CSQUIGGLY> (* squigglys not working*)
+    BLOCK = <WS>? <OSQUIGGLY> <WS>? EXPRESSIONS <WS>? <CSQUIGGLY> <WS>? (* squigglys not working*)
+
 
     CALL = <OPAREN> EXPRESSIONS <CPAREN>
-         | <DOLLAR> <WS> EXPRESSIONS !<DOLLAR> (* we want to avoid being greedy for nesting to work*)
+         | <DOLLAR> <WS> EXPRESSIONS (<EOL> | <NL> | !<DOLLAR>)  (* we want to avoid being greedy for nesting to work*)
     LAMBDA = <PIPE> PARAMLIST <WS>? <ROCKET> <WS> EXPRESSION <PIPE>
     PARAMLIST = {NAME <WS>?}
+    JSBLOCK = <BACKTICK> ANYNOTBACKTICK <BACKTICK>
 
     ASSIGNMENT = <LET> <WS> NAME <WS>? <EQUAL> <WS>? EXPRESSION
-    NAME = #'[a-zA-Z]+'
+    NAME = #'[a-zA-Z]+|\\+|\\*|\\-|\\/'
     WS = #'\\s+'
+    
+    NL = #'\\n+'
+    EOL = #'$'
 
     NUMBER_LITERAL = #'[0-9]+'
     OPAREN = '('
@@ -70,6 +77,8 @@ var grammar = {
     LET = 'let'
     OSQUIGGLY = '{'
     CSQUIGGLY = '}'
+    BACKTICK = '`'
+    ANYNOTBACKTICK = #'[^`]+'
     "))
 ;;    EXPRESSION = OPAREN EXPRESSION CPAREN | NAME EXPRESSION | NAME
 (parser "foo bar")
@@ -80,6 +89,13 @@ var grammar = {
 (defmulti next
   first
   )
+
+(defmethod next :PROGRAM [ast]
+  (string/join "\n" (map next (rest ast)))
+  )
+(defmethod next :JSBLOCK [ast]
+  (let [js-code (second (second ast))]
+    js-code))
 
 (defmethod next :BLOCK [ast]
   (string/join "\n" (map next (rest ast)))
@@ -97,36 +113,43 @@ var grammar = {
         fn (second exprs)
         args (drop 2 exprs)]
     ;; currying
-    (apply str (next fn) (map #(format "(%s)" %) (map next args)))
+    (if (empty? args)
+      (str (next fn) "()")
+      (apply str (next fn) (map #(format "(%s)" %) (map next args))))
     ;; non currying
 ;    (format "%s(%s)" (next fn) (string/join ", " (map next args)))
     ))
 
 (defmethod next :NAME [ast]
-  (second ast))
+  (let [result
+        (second ast)]
+    (case result
+      "*" "mul"
+      "+" "add"
+      "-" "sub"
+      "/" "div"
+      result
+      )
+    ))
 
 (defmethod next :NUMBER_LITERAL [ast]
 
   (second ast) ;; emit number literal
-;  (println "gen" (second ast))
-;  (map next (drop 2 ast))
   )
 (defmethod next :LAMBDA [ast]
 
-  (let [param-list (nth ast 1)
-        fn-body (nth ast 2)]
-
-    ;; non curried
-    ;(format "function(%s){\n  return %s;\n}" (next param-list) (next fn-body))
+  (let [param-list (next (nth ast 1))
+        fn-body (next (nth ast 2))]
 
     ;;curried
-    (str (next param-list) (next fn-body))))
+    (if (= "" param-list)
+      (str "(() => " fn-body ")")
+      (str "(" param-list fn-body ")"))))
 
 (defmethod next :PARAMLIST [ast]
   (apply str (map #(format "(%s) => " %) (map second (rest ast)))))
 
 (defmethod next :ASSIGNMENT [ast]
-  (println "assign" ast)
   (let [assignment-name (nth ast 1)
         righthand-side (nth ast 2)
         ]

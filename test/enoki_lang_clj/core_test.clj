@@ -26,26 +26,40 @@
     (pprint (code-gen (parser "$ foo")))
 
 
-    (pprint (code-gen (parser "let x = |x => $ add 1 inc|")))
+    (pprint (parser "let x = |x => $ add 1 inc|"))
 
-    (pprint  (parser "{
-let x = 3
-let y = 5
-let inc = |a => $ add a one|
-let x = add
-}"))
+
     (println (code-gen (parser "{
 let x = 3
 let y = 5
 let inc = |a => $ add a one|
 let x = add
 let f = |=> add|
-
-
+let z = (add)
+let g = $ add
 
 let x = |a b c => foo|
 
 }")))
+
+    (println "###############")
+    (println (code-gen (parser "{
+
+let + = `(a) => (b) => a + b;`
+let * = `(a) => (b) => a * b;`
+let foo = 3
+let inc = $ add
+
+let fact = |n => $ * n $ fact $ dec n|
+
+let wat = wah
+
+let woo = +
+
+}
+
+")))
+
 
 
     
