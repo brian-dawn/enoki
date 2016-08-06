@@ -1,4 +1,4 @@
-# enoki-lang-clj
+# enoki-lang 🍄
 
 Yet another compiles to JS language.
 
