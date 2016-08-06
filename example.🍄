@@ -1,13 +1,13 @@
 
-`/* We can emit regular JS with backticks.*/`
-`/* Code comments don't exist yet lawl... but this works. */`
+# We can emit regular JS with backticks.
+# Code comments don't exist yet lawl... but this works.
 
 
 inc = +(1)
 result = inc(4)
 println(result)
 
-`/* Lists are immutable. */`
+# Lists are immutable.
 somelist = [1, 2, 3]
 anotherList = push(somelist, 4)
 println(somelist)

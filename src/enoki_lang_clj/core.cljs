@@ -20,13 +20,15 @@
                | ASSIGNMENT
                | BLOCK
                | JSBLOCK
-               | PROGRAM
+               | COMMENT
 
 
     EXPRESSIONS = {EXPRESSION <WS>?}
     BLOCK = <OSQUIGGLY> <WS>? EXPRESSIONS <WS>? <CSQUIGGLY> <WS>? (* squigglys not working*)
+          (*| <WS?> EXPRESSIONS <WS>? <EOF>  TODO this doesn't work *)
 
-    PROGRAM = <WS>? EXPRESSIONS <WS>? <EOL>
+    COMMENT = #'#.*'
+
     COMMAEXPRS = {(EXPRESSION <COMMA> <WS>?)* EXPRESSION}
     CALL = EXPRESSION <OPAREN> COMMAEXPRS <CPAREN>
 
@@ -42,9 +44,7 @@
     WS = #'\\s+'
     
     NL = #'\\n+'
-    EOL = #'$'
-    EOF = #'\\A'
-
+    EOL = #'\\$'
 
     NUMBER_LITERAL = #'[0-9]+'
     OPAREN = '('
@@ -60,6 +60,8 @@
     COMMA = ','
     ANYNOTBACKTICK = #'[^`]+'
 
+
+
     OSQUARE = '['
     CSQUARE = ']'
     "))
@@ -67,6 +69,8 @@
 
 (defmulti nxt
   first)
+
+(defmethod nxt :COMMENT [ast])
 
 (defmethod nxt :PROGRAM [ast]
   (string/join "\n" (map nxt (rest ast))))
@@ -154,12 +158,13 @@
 
 (enable-console-print!)
 
-(defn -dev-main
+(defn dev-main
   "🍄 goes in, 💩 comes out."
   [& args]
 
   (let [src (read-stdin)
         ast (parser src)
+        _ (println ast)
         out (code-gen ast)
         ]
     (println "# Input")
@@ -178,18 +183,17 @@
   [& args]
 
   (let [src (read-stdin)
-        ast (parser src)
-        out (code-gen ast)
-
         other-srcs (for [src args]
-                     (code-gen (parser (.readFileSync fs src "utf8"))))
+                     (.readFileSync fs src "utf8"))
+
+        big-src (str "{" (apply str other-srcs) src "}")
+        ast (parser big-src)
         ]
-    (println "const Immutable = require('immutable');")
-    (doseq [out other-srcs]
-      (println out))
-    (println out)))
+    (if (map? ast)
+      (println ast)
+      (do
+        (println "const Immutable = require('immutable');")
+        (println
+         (code-gen ast))))))
 
 (set! *main-cli-fn* -main)
-
-;; TODO how to require Immutable.JS into output of files?
-;; We now need to deal with loadpath bullshit. D:
