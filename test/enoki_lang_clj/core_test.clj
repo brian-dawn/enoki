@@ -14,55 +14,47 @@
 
                                         ;    (println (code-gen (parser "add a $ sub 4")))
 
-    (println (code-gen (parser "|a => |u => 5||")))
-
-    (println "foo bar $ grawl") ;; call foo with bar
-    (println (code-gen (parser "(map |a => 4| mylist)")))
-    (println (code-gen (parser "$ foo"))) ;; this has to go into prev
-
-    (pprint (code-gen (parser "$ foo bar $ baz wat $ yay")))
-    (pprint (code-gen (parser "$ |a => 1| bar $ baz wat $ yay")))
-    (pprint (code-gen (parser "|=> 1|")))
-    (pprint (code-gen (parser "$ foo")))
-
-
-    (pprint (parser "let x = |x => $ add 1 inc|"))
-
-
-    (println (code-gen (parser "{
-let x = 3
-let y = 5
-let inc = |a => $ add a one|
-let x = add
-let f = |=> add|
-let z = (add)
-let g = $ add
-
-let x = |a b c => foo|
-
-}")))
-
-    (println "###############")
     (println (code-gen (parser "{
 
-let + = `(a) => (b) => a + b;`
-let * = `(a) => (b) => a * b;`
-let foo = 3
-let inc = $ add
+foo(baz, boo)
 
-let fact = |n => $ * n $ fact $ dec n|
+what()
 
-let wat = wah
+what(huh)
 
-let woo = +
+a(b(c, d, e))
+
+(foo) => 3
+
+=> 3
+
+x = 3
+
+y = => 3
+
++ = `(a) => (b) => a + b`
+inc = add(1)
+
+myfunction = (a, b, c) => a
+
+add(2, 3)
+
+var = {
+  hello()
 
 }
 
+}
 ")))
 
+    #_(println (code-gen (parser "(foo, bar) => foo")))
+    (println (code-gen (parser "=>=>=> foo")))
 
+    (println (code-gen (parser "
+hello()
+world(a,b,c)
 
-    
+")))
     ;; I don't like these call semantics - we shouldn't need the dollar sign
     ;; because we know the call is the first thing.
     ;; we can make all things be a call then let x = 3 is a function that returns 3? idk
