@@ -1,9 +1,10 @@
 (ns enoki-lang-clj.core
   (:require
    [instaparse.core :as insta]
-   [clojure.string :as string])
-  
-  (:gen-class))
+   [clojure.string :as string]
+   [goog.string :refer [format]]
+   )
+  )
 
 (def parser
   (insta/parser
@@ -136,11 +137,16 @@
 (defn code-gen [parser]
   (nxt parser))
 
+(def fs (js/require "fs"))
+(defn read-stdin []
+  (.toString (.readFileSync fs "/dev/stdin")))
+
+
+(enable-console-print!)
+
 (defn -main
   "🍄 goes in, 💩 comes out."
   [& args]
-  (let [ast (parser (slurp *in*))]
-    (if (map? ast)
-      (binding [*out* *err*]
-        (println ast))
-      (println (code-gen ast)))))
+  (println (code-gen (parser (read-stdin)))))
+
+(set! *main-cli-fn* -main)

@@ -1,15 +1,22 @@
 # enoki-lang-clj
 
-Yet another compiles to JS language. I felt the world needed more of these.
+Yet another compiles to JS language.
 
-Right now the compiler is Clojure, but it should be trivial to leverage CLJS so that
-it runs on node.
+All I really want from programming languages is immutability by default,
+I also wanted to have fun with automatic currying.
+
+The compiler is written in CLJS but should compile to clean JS that could
+be ran in a web browser.
 
 ## Usage
 
-Run the example with leiningen and node.
+First compile the compiler:
 
-    cat example.🍄  | lein run | node
+    lein cljsbuild once
+
+Now run the example:
+
+    cat example.🍄  | node out/main.js | node
 
 Yeah that's right, the file ext is an emoji. You're welcome.
 
@@ -19,6 +26,7 @@ Yeah that's right, the file ext is an emoji. You're welcome.
 * Datastructures with immutablejs or mori
 * Code comments
 * Lazy infinite seqs? Yes plz. Maybe syntax for ranges 1.. or 1..10
+* EDN support instead of JSON - maybe.
 
 ## License
 
