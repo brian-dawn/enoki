@@ -7,9 +7,8 @@ inc = +(1)
 result = inc(4)
 println(result)
 
+`/* Lists are immutable. */`
 somelist = [1, 2, 3]
+anotherList = push(somelist, 4)
 println(somelist)
-
-
-
-
+println(anotherList)
