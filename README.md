@@ -8,6 +8,16 @@ I also wanted to have fun with automatic currying.
 The compiler is written in CLJS but should compile to clean JS that could
 be ran in a web browser.
 
+## Features
+
+* None of the extra baggage of JS.
+* Immutability.
+* No operators, only functions.
+* Automatic currying.
+* Simple JS interop.
+* No semicolons.
+* Hard to type file extensions.
+
 ## Usage
 
 First compile the compiler:
