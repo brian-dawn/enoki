@@ -24,6 +24,10 @@ First compile the compiler:
 
     lein cljsbuild once
 
+Right now you unfortunately need ImmutableJS installed globally:
+
+    npm install -g immutable
+
 Now run the example:
 
     cat example.🍄  | node out/main.js | node

@@ -2,6 +2,7 @@
   (:require
    [instaparse.core :as insta]
    [clojure.string :as string]
+;   [cljs.pprint :refer [pp]]
    [goog.string :refer [format]]
    )
   )
@@ -15,6 +16,7 @@
                | NAME 
                | NUMBER_LITERAL
                | LAMBDA
+               | VECTOR
                | ASSIGNMENT
                | BLOCK
                | JSBLOCK
@@ -32,6 +34,8 @@
            | <ROCKET> <WS>? EXPRESSION
     PARAMLIST = {NAME <WS>?}
     JSBLOCK = <BACKTICK> ANYNOTBACKTICK <BACKTICK>
+
+    VECTOR = <OSQUARE> COMMAEXPRS <CSQUARE>
 
     ASSIGNMENT = NAME <WS>? <EQUAL> <WS>? EXPRESSION
     NAME = #'[a-zA-Z]+|\\+|\\*|\\-|\\/'
@@ -55,6 +59,9 @@
     BACKTICK = '`'
     COMMA = ','
     ANYNOTBACKTICK = #'[^`]+'
+
+    OSQUARE = '['
+    CSQUARE = ']'
     "))
 
 
@@ -105,6 +112,9 @@
       )
     ))
 
+(defmethod nxt :VECTOR [ast]
+  (format "Immutable.List.of(%s);" (string/join ", " (first (map nxt (rest ast))))))
+
 (defmethod nxt :NUMBER_LITERAL [ast]
   (second ast))
 
@@ -135,7 +145,12 @@
     (format "const %s = %s;" (nxt assignment-name) (nxt righthand-side))))
 
 (defn code-gen [parser]
-  (nxt parser))
+  (str
+   "const Immutable = require('immutable');
+// END RUNTIME :P
+"
+   
+   (nxt parser)))
 
 (def fs (js/require "fs"))
 (defn read-stdin []
@@ -144,9 +159,35 @@
 
 (enable-console-print!)
 
+(defn -dev-main
+  "🍄 goes in, 💩 comes out."
+  [& args]
+  (let [src (read-stdin)
+        ast (parser src)
+        out (code-gen ast)
+        ]
+    (println "# Input")
+    (println src)
+
+    (println)
+    (println "# AST")
+    (println ast)
+
+    (println)
+    (println "# out")
+    (println out)))
+
 (defn -main
   "🍄 goes in, 💩 comes out."
   [& args]
-  (println (code-gen (parser (read-stdin)))))
+  (let [src (read-stdin)
+        ast (parser src)
+        out (code-gen ast)
+        ]
+
+    (println out)))
 
 (set! *main-cli-fn* -main)
+
+;; TODO how to require Immutable.JS into output of files?
+;; We now need to deal with loadpath bullshit. D:
