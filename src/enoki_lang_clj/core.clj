@@ -137,7 +137,7 @@
   (nxt parser))
 
 (defn -main
-  "🍄 goes in, shit comes out."
+  "🍄 goes in, 💩 comes out."
   [& args]
   (let [ast (parser (slurp *in*))]
     (if (map? ast)
