@@ -125,18 +125,16 @@
 (defmethod nxt :LAMBDA [ast]
 
   (if (= 2 (count ast))
-    (format "(() => %s)" (nxt (nth ast 1)))
+    (format "() => %s" (nxt (nth ast 1)))
     (let [param-list (nxt (nth ast 1))
           fn-body (nxt (nth ast 2))]
 
       ;;curried
       (if (empty? param-list)
-        (format "(() => %s)" fn-body)
+        (format "() => %s)" fn-body)
         (str
-         "("
          (apply str (map #(format "(%s) => " %) param-list))
          fn-body
-         ")"
          )))))
 
 (defmethod nxt :PARAMLIST [ast]
