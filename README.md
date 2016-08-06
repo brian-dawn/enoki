@@ -33,6 +33,9 @@ Now run the example:
     cat example.🍄 | node out/main.js stdlib.🍄 | node
 
 Yeah that's right, the file ext is an emoji. You're welcome.
+New enoki source files can be created with the provided helper:
+
+    bin/mush mynewfile
 
 ## TODO
 
