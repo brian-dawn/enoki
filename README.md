@@ -13,6 +13,13 @@ Run the example with leiningen and node.
 
 Yeah that's right, the file ext is an emoji. You're welcome.
 
+## TODO
+
+* Strings
+* Datastructures with immutablejs or mori
+* Code comments
+* Lazy infinite seqs? Yes plz. Maybe syntax for ranges 1.. or 1..10
+
 ## License
 
 Copyright © 2016 Brian Dawn
