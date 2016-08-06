@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# A helper utility for creating enoki source files.
+
+touch "$1.🍄"
