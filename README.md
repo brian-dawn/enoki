@@ -40,9 +40,10 @@ New enoki source files can be created with the provided helper:
 ## TODO
 
 * Strings
-* Datastructures with immutablejs or mori
-* Code comments
-* Lazy infinite seqs? Yes plz. Maybe syntax for ranges 1.. or 1..10
+* Syntax ranges 1.. or 1..10
+* Maps
+* Sets
+* Keywords
 * EDN support instead of JSON - maybe.
 
 ## License
