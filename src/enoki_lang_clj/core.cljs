@@ -40,7 +40,7 @@
     VECTOR = <OSQUARE> COMMAEXPRS <CSQUARE>
 
     ASSIGNMENT = NAME <WS>? <EQUAL> <WS>? EXPRESSION
-    NAME = #'[a-zA-Z]+|\\+|\\*|\\-|\\/'
+    NAME = #'[a-zA-Z]([a-zA-Z0-9]|-)*|\\+|\\*|\\-|\\/'
     WS = #'\\s+'
     
     NL = #'\\n+'
@@ -105,7 +105,9 @@
 
 (defmethod nxt :NAME [ast]
   (let [result
-        (second ast)]
+        (string/replace (second ast)
+                        #"-"
+                        "_")]
     ;; lets be awful and translate symbols into corresponding valid JS names here.
     (case result
       "*" "mul"
@@ -195,3 +197,5 @@
          (code-gen ast))))))
 
 (set! *main-cli-fn* -main)
+
+;; TODO a thread operator would be cool.

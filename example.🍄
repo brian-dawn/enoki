@@ -8,7 +8,10 @@ result = inc(4)
 println(result)
 
 # Lists are immutable.
-somelist = [1, 2, 3]
-anotherList = push(somelist, 4)
-println(somelist)
-println(anotherList)
+some-list = [1, 2, 3]
+another-list = map(inc, push(some-list, 4))
+println(some-list)
+println(another-list)
+
+
+println(reduce(+, another-list))

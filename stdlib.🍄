@@ -1,16 +1,31 @@
+# Generic
 
-`/* Operators */`
+# Take a curried function of two args and turn it into a non curried
+# version with two args.
+uncurry2 = (curriedfn) => `(a, b) => curriedfn(a)(b)`
+
+# Operators
 + = `(a) => (b) => a + b`
 - = `(a) => (b) => a - b`
 * = `(a) => (b) => a * b`
 / = `(a) => (b) => a / b`
 
-`/* IO */`
+# IO
 println = `(a) => console.log(a);`
 
-`/* Lists */`
+# Lists
 push = `(list) => (element) => list.push(element);`
 concat = `(list1) => (list2) => list1.concat(list2);`
 
-`/* Generic collections */`
+
+# Generic collections
 size = `(collection) => collection.size();`
+
+# map converts any collection to a lazy sequence, beware!
+map = (fn, seq) => `seq.toSeq().map(fn)`
+filter = (fn, seq) => `seq.toSeq().filter(fn)`
+reduce = (fn, seq) => `seq.toSeq().reduce(uncurry2(fn))`
+
+
+
+
