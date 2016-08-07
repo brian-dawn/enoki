@@ -26,6 +26,6 @@ map = (fn, seq) => `seq.toSeq().map(fn)`
 filter = (fn, seq) => `seq.toSeq().filter(fn)`
 reduce = (fn, seq) => `seq.toSeq().reduce(uncurry2(fn))`
 
-
+take = (n, seq) => `seq.take(n)`
 
 

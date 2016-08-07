@@ -21,7 +21,7 @@
                | BLOCK
                | JSBLOCK
                | COMMENT
-
+               | RANGE
 
     EXPRESSIONS = {EXPRESSION <WS>?}
     BLOCK = <OSQUIGGLY> <WS>? EXPRESSIONS <WS>? <CSQUIGGLY> <WS>? (* squigglys not working*)
@@ -38,6 +38,8 @@
     JSBLOCK = <BACKTICK> ANYNOTBACKTICK <BACKTICK>
 
     VECTOR = <OSQUARE> COMMAEXPRS <CSQUARE>
+    RANGE = NUMBER_LITERAL <'..'> NUMBER_LITERAL
+          | NUMBER_LITERAL <'..'> !NUMBER_LITERAL
 
     ASSIGNMENT = NAME <WS>? <EQUAL> <WS>? EXPRESSION
     NAME = #'[a-zA-Z]([a-zA-Z0-9]|-)*|\\+|\\*|\\-|\\/'
@@ -69,6 +71,16 @@
 
 (defmulti nxt
   first)
+
+(defmethod nxt :RANGE [ast]
+  (let [first-num (nxt (nth ast 1))
+        second-num (if (<= 3 (count ast))
+                     (nxt (nth ast 2))
+                     "Infinity"
+                     )]
+    (format "Immutable.Range(%s, %s)" first-num second-num)
+    )
+  )
 
 (defmethod nxt :COMMENT [ast])
 

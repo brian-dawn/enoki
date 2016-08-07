@@ -1,8 +1,4 @@
 
-# We can emit regular JS with backticks.
-# Code comments don't exist yet lawl... but this works.
-
-
 inc = +(1)
 result = inc(4)
 println(result)
@@ -15,3 +11,9 @@ println(another-list)
 
 
 println(reduce(+, another-list))
+
+# We can create seqs with ranges.
+println(map(inc, 1..4))
+
+# We can also make infinite sequences.
+println(map(inc, take(10, 1..)))
