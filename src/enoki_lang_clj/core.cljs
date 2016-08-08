@@ -20,7 +20,6 @@
                | ASSIGNMENT
                | BLOCK
                | JSBLOCK
-               | COMMENT
                | RANGE
 
     EXPRESSIONS = {EXPRESSION <WS>?}
