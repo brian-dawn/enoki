@@ -18,6 +18,22 @@ be ran in a web browser.
 * No semicolons.
 * Hard to type file extensions.
 
+## Examples
+
+There are no operators, only functions:
+
+    +(1, 3) = 4
+
+Currying is automatic, which is a fancy way of saying that if
+you supply less arguments than the total number of arguments a function
+takes then it will return a function with the partially applied arguments
+already applied. For example:
+
+    +(1) = [a function that takes one argument and adds 1 to it]
+
+Because `+` takes two arguments, and we only supplied 1 we get back a function that 
+takes one argument and adds `1` to it.
+
 ## Usage
 
 First compile the compiler:
@@ -40,7 +56,6 @@ New enoki source files can be created with the provided helper:
 ## TODO
 
 * Strings
-* Syntax ranges 1.. or 1..10
 * Maps
 * Sets
 * Keywords
