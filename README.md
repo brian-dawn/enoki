@@ -34,6 +34,24 @@ already applied. For example:
 Because `+` takes two arguments, and we only supplied 1 we get back a function that 
 takes one argument and adds `1` to it.
 
+Lambdas are defined just like they are in JavaScript, except you can omit the parenthesis
+for lambdas that take zero arguments.
+
+    my-cool-add-fn = (a, b) => +(a, b)
+    some-other-fn = => 3
+
+JavaScript interop is simple. Simply surround source code in backticks `\`` and it will
+get spat out into the target source.
+
+    my-fancy-println = (a) => `console.log(a)`
+
+The compiler won't mangle names in JS output, except in the case where it does. For example if you use `+`,
+`-`, `/`, `*`, or anytime you use kebab case like in the above examples it will get converted
+to a JS friendly name.
+
+    foo-bar-baz becomes foo_bar_baz
+    +, -, *, / become add, sub, mul, and div respectively
+
 ## Usage
 
 First compile the compiler:
@@ -56,6 +74,7 @@ New enoki source files can be created with the provided helper:
 ## TODO
 
 * Strings
+* Branching - currently use JS interop for if statements :P woops.
 * Maps
 * Sets
 * Keywords
