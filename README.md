@@ -40,7 +40,7 @@ for lambdas that take zero arguments.
     my-cool-add-fn = (a, b) => +(a, b)
     some-other-fn = => 3
 
-JavaScript interop is simple. Simply surround source code in backticks `\`` and it will
+JavaScript interop is simple. Surround source code in backticks ``` and it will
 get spat out into the target source.
 
     my-fancy-println = (a) => `console.log(a)`
